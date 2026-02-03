@@ -1,0 +1,14 @@
+services:
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "17687:7687"  # Bolt (use 17687 to avoid conflicts)
+      - "17474:7474"  # HTTP (use 17474 to avoid conflicts)
+    environment:
+      NEO4J_AUTH: neo4j/testpassword
+      NEO4J_PLUGINS: '[]'
+    healthcheck:
+      test: ["CMD", "neo4j", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

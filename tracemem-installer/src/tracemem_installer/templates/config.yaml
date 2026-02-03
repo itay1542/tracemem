@@ -1,0 +1,46 @@
+# TraceMem Configuration
+# https://github.com/Quangentics/tracemem
+
+# Storage mode: "local" (per-project .tracemem/) or "global" (~/.tracemem/)
+mode: local
+
+# Graph store backend: "kuzu" (embedded, zero-config) or "neo4j" (server)
+graph_store: kuzu
+
+# Session state storage directory
+state_dir: ~/.tracemem/sessions
+
+# Neo4j configuration (only used when graph_store: neo4j)
+neo4j:
+  uri: bolt://localhost:7687
+  user: neo4j
+  password: password
+  database: neo4j
+
+# Embedding configuration
+embedding:
+  model: text-embedding-3-small
+  dimensions: 1536
+  # API key — prefer setting TRACEMEM_OPENAI_API_KEY env var instead
+  # openai_api_key: sk-...
+
+# Retrieval settings
+retrieval:
+  timeout_seconds: 3.0
+  max_results: 3
+  pre_tool_max_results: 5
+
+# Namespace for multi-user isolation (optional)
+# namespace: my-namespace
+
+# Reranker strategy for hybrid search (vector + full-text).
+# "linear" — weighted combination of vector distance and FTS score.
+#   Produces real similarity scores (0.0–1.0). Better for small corpora
+#   where rank-based methods can't differentiate results.
+# "rrf" — Reciprocal Rank Fusion. Merges ranked lists from vector and
+#   FTS. Scores are rank-based (~0.01–0.03), only meaningful with large
+#   corpora (1000+ documents). Switch to this for large-scale deployments.
+reranker: linear
+
+# Enable debug logging to stderr
+debug: false
