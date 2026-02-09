@@ -1,6 +1,6 @@
 [project]
 name = "tracemem-claude"
-version = "0.1.0"
+version = "0.1.1"
 description = "TraceMem — memory hooks installer for Claude Code"
 readme = "README.md"
 authors = [
