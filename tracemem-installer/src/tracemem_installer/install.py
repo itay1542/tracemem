@@ -54,6 +54,19 @@ def _copy_resource_tree(
         installed.append(str(dest.relative_to(base)))
 
 
+def _set_config_mode(skill_dir: Path, scope: str) -> None:
+    """Set the mode in config.yaml to match the install scope."""
+    config_path = skill_dir / "config.yaml"
+    if not config_path.exists():
+        return
+    content = config_path.read_text()
+    if scope == "global":
+        content = content.replace("mode: local", "mode: global")
+    else:
+        content = content.replace("mode: global", "mode: local")
+    config_path.write_text(content)
+
+
 def _merge_settings(claude_dir: Path, scope: str) -> None:
     """Merge TraceMem hook entries into settings.json."""
     settings_path = claude_dir / "settings.json"
@@ -177,6 +190,7 @@ def run_update(scope: str) -> None:
 
     shutil.rmtree(skill_dir)
     installed = _copy_templates(skill_dir)
+    _set_config_mode(skill_dir, scope)
     _merge_settings(claude_dir, scope)
     _ensure_gitignore(claude_dir)
 
@@ -208,8 +222,9 @@ def run_init(scope: str, *, force: bool = False) -> None:
     if skill_dir.exists():
         shutil.rmtree(skill_dir)
 
-    # Copy templates
+    # Copy templates and set mode
     installed = _copy_templates(skill_dir)
+    _set_config_mode(skill_dir, scope)
 
     # Merge hooks into settings.json
     _merge_settings(claude_dir, scope)
