@@ -1,6 +1,6 @@
 [project]
 name = "tracemem-core"
-version = "0.1.2"
+version = "0.1.3"
 description = "Knowledge graph memory system for AI agents"
 readme = "README.md"
 authors = [
