@@ -111,7 +111,9 @@ class TestKuzuGraphStoreCreateNode:
     async def test_create_resource(self, graph_store):
         """Test creating a Resource node."""
         node = Resource(
-            uri="file:///test.py", current_content_hash="abc123", conversation_id="conv1"
+            uri="file:///test.py",
+            current_content_hash="abc123",
+            conversation_id="conv1",
         )
         result = await graph_store.create_node(node)
 
@@ -121,10 +123,14 @@ class TestKuzuGraphStoreCreateNode:
     async def test_create_resource_returns_existing_on_duplicate_uri(self, graph_store):
         """Test MERGE behavior for Resource with existing URI."""
         res1 = Resource(
-            uri="file:///shared.py", current_content_hash="hash1", conversation_id="conv1"
+            uri="file:///shared.py",
+            current_content_hash="hash1",
+            conversation_id="conv1",
         )
         res2 = Resource(
-            uri="file:///shared.py", current_content_hash="hash2", conversation_id="conv2"
+            uri="file:///shared.py",
+            current_content_hash="hash2",
+            conversation_id="conv2",
         )
 
         result1 = await graph_store.create_node(res1)
@@ -216,9 +222,7 @@ class TestKuzuGraphStoreCreateEdge:
         await graph_store.create_node(a1)
         await graph_store.create_node(a2)
 
-        edge = Relationship(
-            source_id=a1.id, target_id=a2.id, conversation_id="conv1"
-        )
+        edge = Relationship(source_id=a1.id, target_id=a2.id, conversation_id="conv1")
         await graph_store.create_edge(edge)
 
     async def test_create_edge_raises_for_unknown_type(self, graph_store):
@@ -332,7 +336,9 @@ class TestKuzuGraphStoreRetrieval:
         )
         await graph_store.create_node(rv)
 
-        result = await graph_store.get_resource_version_by_hash("file://test.py", "hash1")
+        result = await graph_store.get_resource_version_by_hash(
+            "file://test.py", "hash1"
+        )
         assert result is not None
         assert result.content_hash == "hash1"
 

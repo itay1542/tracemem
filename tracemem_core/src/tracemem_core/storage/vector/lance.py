@@ -51,7 +51,9 @@ class LanceDBVectorStore:
                     pa.field("last_accessed", pa.timestamp("us", tz="UTC")),
                 ]
             )
-            self._table = self._db.create_table(self.TABLE_NAME, schema=schema, exist_ok=True)
+            self._table = self._db.create_table(
+                self.TABLE_NAME, schema=schema, exist_ok=True
+            )
 
             # Create FTS index for hybrid search
             self._table.create_fts_index("text", replace=True)

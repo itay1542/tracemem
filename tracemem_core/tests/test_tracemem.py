@@ -55,7 +55,9 @@ class TestTraceMemMessageAPI:
         tm._vector_store = mock_vector_store
 
         # First add a user message
-        user_result = await tm.add_message("conv-1", Message(role="user", content="Hello"))
+        user_result = await tm.add_message(
+            "conv-1", Message(role="user", content="Hello")
+        )
         user_text_id = user_result["user_text"]
 
         # Configure turn-based methods to return appropriate values
@@ -185,9 +187,7 @@ class TestTraceMemToolUses:
         # Configure turn-based methods
         mock_graph_store.get_max_turn_index = AsyncMock(return_value=0)
         mock_graph_store.get_last_node_in_turn = AsyncMock(
-            return_value=UserText(
-                text="Hello", conversation_id="conv-1", turn_index=0
-            )
+            return_value=UserText(text="Hello", conversation_id="conv-1", turn_index=0)
         )
 
         message = Message(
@@ -229,9 +229,7 @@ class TestTraceMemToolUses:
 
         mock_graph_store.get_max_turn_index = AsyncMock(return_value=0)
         mock_graph_store.get_last_node_in_turn = AsyncMock(
-            return_value=UserText(
-                text="Hello", conversation_id="conv-1", turn_index=0
-            )
+            return_value=UserText(text="Hello", conversation_id="conv-1", turn_index=0)
         )
 
         message = Message(role="assistant", content="Hello, how can I help?")
@@ -258,9 +256,7 @@ class TestTraceMemToolUses:
 
         mock_graph_store.get_max_turn_index = AsyncMock(return_value=0)
         mock_graph_store.get_last_node_in_turn = AsyncMock(
-            return_value=UserText(
-                text="Hello", conversation_id="conv-1", turn_index=0
-            )
+            return_value=UserText(text="Hello", conversation_id="conv-1", turn_index=0)
         )
 
         # These tools don't create resources via the extractor
@@ -384,7 +380,9 @@ class TestTraceMemConfig:
 class TestTraceMemStoreSelection:
     """Test that TraceMem selects the correct graph store based on config."""
 
-    def test_default_creates_kuzu_store(self, tmp_path: Path, mock_embedder: MockEmbedder) -> None:
+    def test_default_creates_kuzu_store(
+        self, tmp_path: Path, mock_embedder: MockEmbedder
+    ) -> None:
         """Default config should create KuzuGraphStore."""
         from tracemem_core.storage.graph.kuzu_store import KuzuGraphStore
 
@@ -392,6 +390,7 @@ class TestTraceMemStoreSelection:
         tm = TraceMem(config=config, embedder=mock_embedder)
         assert isinstance(tm._graph_store, KuzuGraphStore)
 
+    @pytest.mark.neo4j
     def test_neo4j_config_creates_neo4j_store(
         self, tmp_path: Path, mock_embedder: MockEmbedder
     ) -> None:
@@ -421,13 +420,17 @@ class TestTraceMemReranker:
         tm = TraceMem(config=config, embedder=mock_embedder)
         assert isinstance(tm._vector_store._reranker, LinearCombinationReranker)
 
-    def test_explicit_reranker_overrides_config(self, mock_embedder: MockEmbedder) -> None:
+    def test_explicit_reranker_overrides_config(
+        self, mock_embedder: MockEmbedder
+    ) -> None:
         """Explicit reranker param overrides config string."""
         config = TraceMemConfig(reranker="rrf")
         tm = TraceMem(config=config, embedder=mock_embedder, reranker="linear")
         assert isinstance(tm._vector_store._reranker, LinearCombinationReranker)
 
-    def test_explicit_reranker_instance_overrides_config(self, mock_embedder: MockEmbedder) -> None:
+    def test_explicit_reranker_instance_overrides_config(
+        self, mock_embedder: MockEmbedder
+    ) -> None:
         """A custom reranker instance overrides config string."""
         custom = MagicMock()
         config = TraceMemConfig(reranker="rrf")

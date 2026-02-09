@@ -765,7 +765,11 @@ class Neo4jGraphStore:
 
         logger.debug(
             "get_resource_conversations uri=%s limit=%d sort_by=%s sort_order=%s exclude=%s",
-            uri, limit, sort_by, sort_order, exclude_conversation_id,
+            uri,
+            limit,
+            sort_by,
+            sort_order,
+            exclude_conversation_id,
         )
 
         sort_field = "u.created_at" if sort_by == "created_at" else "u.last_accessed_at"
@@ -843,7 +847,9 @@ class Neo4jGraphStore:
             result = await session.run(query, {"id": str(node_id)})
             records = await result.data()
 
-        logger.debug("get_trajectory_nodes node_id=%s results=%d", node_id, len(records))
+        logger.debug(
+            "get_trajectory_nodes node_id=%s results=%d", node_id, len(records)
+        )
         return records
 
     # =========================================================================

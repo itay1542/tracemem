@@ -6,6 +6,8 @@ Run with:
     uv run pytest tests/integration/test_local_mode.py -v
 """
 
+import pytest
+
 from tracemem_core.config import TraceMemConfig
 from tracemem_core.storage.graph.kuzu_store import KuzuGraphStore
 from tracemem_core.tracemem import TraceMem
@@ -32,6 +34,7 @@ class TestLocalModeConstruction:
         assert (home / "graph").exists()
         assert (home / "vectors").exists()
 
+    @pytest.mark.neo4j
     async def test_neo4j_mode_creates_neo4j_store(self, tmp_path):
         """Verify that graph_store='neo4j' creates Neo4jGraphStore."""
         config = TraceMemConfig(

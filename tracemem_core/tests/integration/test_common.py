@@ -20,10 +20,12 @@ from tracemem_core.retrieval import HybridRetrievalStrategy, RetrievalConfig
 from tracemem_core.tracemem import TraceMem
 
 
-@pytest.fixture(params=[
-    "kuzu",
-    pytest.param("neo4j", marks=pytest.mark.neo4j),
-])
+@pytest.fixture(
+    params=[
+        "kuzu",
+        pytest.param("neo4j", marks=pytest.mark.neo4j),
+    ]
+)
 def tracemem(request):
     """Yield a connected TraceMem instance for the requested backend.
 
@@ -48,6 +50,7 @@ def retrieval(tracemem: TraceMem):
 # ---------------------------------------------------------------------------
 # TestUserMessageIngestion
 # ---------------------------------------------------------------------------
+
 
 class TestUserMessageIngestion:
     """Tests for user message ingestion into graph and vector stores."""
@@ -111,6 +114,7 @@ class TestUserMessageIngestion:
 # TestAssistantMessageIngestion
 # ---------------------------------------------------------------------------
 
+
 class TestAssistantMessageIngestion:
     """Tests for assistant message ingestion and graph relationships."""
 
@@ -142,6 +146,7 @@ class TestAssistantMessageIngestion:
 # TestFullTraceImport
 # ---------------------------------------------------------------------------
 
+
 class TestFullTraceImport:
     """Tests for importing complete traces with tool calls."""
 
@@ -161,7 +166,9 @@ class TestFullTraceImport:
                 role="assistant",
                 content="Reading the file...",
                 tool_calls=[
-                    ToolCall(id="call_1", name="read_file", args={"path": str(test_file)})
+                    ToolCall(
+                        id="call_1", name="read_file", args={"path": str(test_file)}
+                    )
                 ],
             ),
             Message(role="tool", content="def hello(): pass", tool_call_id="call_1"),
@@ -172,7 +179,11 @@ class TestFullTraceImport:
         assert "user_text" in result
         assert "agent_text" in result
 
-        resource_keys = [k for k in result.keys() if k.startswith("resource_") and not k.startswith("resource_version_")]
+        resource_keys = [
+            k
+            for k in result.keys()
+            if k.startswith("resource_") and not k.startswith("resource_version_")
+        ]
         version_keys = [k for k in result.keys() if k.startswith("resource_version_")]
 
         assert len(resource_keys) == 1
@@ -211,7 +222,11 @@ class TestFullTraceImport:
 
         result = await tracemem.import_trace("conv-1", messages)
 
-        resource_keys = [k for k in result.keys() if k.startswith("resource_") and not k.startswith("resource_version_")]
+        resource_keys = [
+            k
+            for k in result.keys()
+            if k.startswith("resource_") and not k.startswith("resource_version_")
+        ]
         version_keys = [k for k in result.keys() if k.startswith("resource_version_")]
 
         assert len(resource_keys) == 2
@@ -224,6 +239,7 @@ class TestFullTraceImport:
 # ---------------------------------------------------------------------------
 # TestResourceVersioning
 # ---------------------------------------------------------------------------
+
 
 class TestResourceVersioning:
     """Tests for resource versioning when content changes."""
@@ -299,16 +315,21 @@ class TestResourceVersioning:
         ]
         result2 = await tracemem.import_trace("conv-2", messages2)
 
-        version_keys_1 = [k for k in result1.keys() if k.startswith("resource_version_")]
+        version_keys_1 = [
+            k for k in result1.keys() if k.startswith("resource_version_")
+        ]
         assert len(version_keys_1) == 1
 
-        version_keys_2 = [k for k in result2.keys() if k.startswith("resource_version_")]
+        version_keys_2 = [
+            k for k in result2.keys() if k.startswith("resource_version_")
+        ]
         assert len(version_keys_2) == 0, "Same content should not create new version"
 
 
 # ---------------------------------------------------------------------------
 # TestMultipleConversations
 # ---------------------------------------------------------------------------
+
 
 class TestMultipleConversations:
     """Tests for conversation isolation and cross-conversation queries."""
@@ -333,9 +354,7 @@ class TestMultipleConversations:
         assert len(results) >= 1
         assert all(r.conversation_id != "conv-1" for r in results)
 
-    async def test_conversations_share_resources(
-        self, tracemem: TraceMem, tmp_path
-    ):
+    async def test_conversations_share_resources(self, tracemem: TraceMem, tmp_path):
         """Verify multiple conversations accessing same file share Resource node."""
         shared_file = tmp_path / "shared.py"
 
@@ -365,11 +384,21 @@ class TestMultipleConversations:
         ]
         result2 = await tracemem.import_trace("conv-2", messages2)
 
-        resource_keys_1 = [k for k in result1.keys() if k.startswith("resource_") and not k.startswith("resource_version_")]
-        resource_keys_2 = [k for k in result2.keys() if k.startswith("resource_") and not k.startswith("resource_version_")]
+        resource_keys_1 = [
+            k
+            for k in result1.keys()
+            if k.startswith("resource_") and not k.startswith("resource_version_")
+        ]
+        resource_keys_2 = [
+            k
+            for k in result2.keys()
+            if k.startswith("resource_") and not k.startswith("resource_version_")
+        ]
 
         assert len(resource_keys_1) == 1
-        assert len(resource_keys_2) == 0, "Second conversation should reuse existing resource"
+        assert len(resource_keys_2) == 0, (
+            "Second conversation should reuse existing resource"
+        )
 
     async def test_get_conversations_for_resource(
         self,
@@ -410,6 +439,7 @@ class TestMultipleConversations:
 # TestCrossConversationSharedResource
 # ---------------------------------------------------------------------------
 
+
 class TestCrossConversationSharedResource:
     """Tests for cross-conversation queries when multiple conversations access the same file."""
 
@@ -429,7 +459,9 @@ class TestCrossConversationSharedResource:
                 role="assistant",
                 content="I'll read the configuration file for you.",
                 tool_calls=[
-                    ToolCall(id="call_1", name="read_file", args={"path": str(config_file)})
+                    ToolCall(
+                        id="call_1", name="read_file", args={"path": str(config_file)}
+                    )
                 ],
             ),
             Message(role="tool", content=file_content, tool_call_id="call_1"),
@@ -446,7 +478,9 @@ class TestCrossConversationSharedResource:
                 role="assistant",
                 content="Let me check the configuration.",
                 tool_calls=[
-                    ToolCall(id="call_2", name="read_file", args={"path": str(config_file)})
+                    ToolCall(
+                        id="call_2", name="read_file", args={"path": str(config_file)}
+                    )
                 ],
             ),
             Message(role="tool", content=file_content, tool_call_id="call_2"),
@@ -458,18 +492,24 @@ class TestCrossConversationSharedResource:
         result2 = await tracemem.import_trace("conv-bob", messages2)
 
         resource_keys_1 = [
-            k for k in result1.keys()
+            k
+            for k in result1.keys()
             if k.startswith("resource_") and not k.startswith("resource_version_")
         ]
         resource_keys_2 = [
-            k for k in result2.keys()
+            k
+            for k in result2.keys()
             if k.startswith("resource_") and not k.startswith("resource_version_")
         ]
         assert len(resource_keys_1) == 1
         assert len(resource_keys_2) == 0
 
-        version_keys_1 = [k for k in result1.keys() if k.startswith("resource_version_")]
-        version_keys_2 = [k for k in result2.keys() if k.startswith("resource_version_")]
+        version_keys_1 = [
+            k for k in result1.keys() if k.startswith("resource_version_")
+        ]
+        version_keys_2 = [
+            k for k in result2.keys() if k.startswith("resource_version_")
+        ]
         assert len(version_keys_1) == 1
         assert len(version_keys_2) == 0
 
@@ -522,9 +562,7 @@ class TestCrossConversationSharedResource:
         expected_texts = {msg for _, msg in user_messages}
         assert user_texts == expected_texts
 
-    async def test_resource_version_lookup_by_hash(
-        self, tracemem: TraceMem, tmp_path
-    ):
+    async def test_resource_version_lookup_by_hash(self, tracemem: TraceMem, tmp_path):
         """Verify get_resource_version_by_hash returns the correct version."""
         test_file = tmp_path / "test.py"
         content = "def test(): pass"
@@ -562,6 +600,7 @@ class TestCrossConversationSharedResource:
 # TestTurnIndex
 # ---------------------------------------------------------------------------
 
+
 class TestTurnIndex:
     """Tests for turn_index tracking in conversation nodes."""
 
@@ -577,9 +616,7 @@ class TestTurnIndex:
 
     async def test_second_user_increments_turn(self, tracemem: TraceMem):
         """Second user message should be turn 1."""
-        await tracemem.add_message(
-            "conv-1", Message(role="user", content="User 1")
-        )
+        await tracemem.add_message("conv-1", Message(role="user", content="User 1"))
         await tracemem.add_message(
             "conv-1", Message(role="assistant", content="Agent 1")
         )
@@ -626,6 +663,7 @@ class TestTurnIndex:
 # TestRetrievalStrategy
 # ---------------------------------------------------------------------------
 
+
 class TestRetrievalStrategy:
     """Tests for retrieval strategy and context retrieval."""
 
@@ -660,9 +698,10 @@ class TestRetrievalStrategy:
 
         tool_use = context.tool_uses[0]
         assert tool_use.resource_version is not None
-        assert tool_use.resource_version.content_hash == hashlib.sha256(
-            "def test(): pass".encode()
-        ).hexdigest()
+        assert (
+            tool_use.resource_version.content_hash
+            == hashlib.sha256("def test(): pass".encode()).hexdigest()
+        )
 
     async def test_search_finds_relevant_messages(
         self,
@@ -671,7 +710,8 @@ class TestRetrievalStrategy:
     ):
         """Verify search returns relevant results."""
         await tracemem.add_message(
-            "conv-1", Message(role="user", content="How do I fix the authentication bug?")
+            "conv-1",
+            Message(role="user", content="How do I fix the authentication bug?"),
         )
         await tracemem.add_message(
             "conv-2", Message(role="user", content="What's the weather today?")
@@ -734,6 +774,7 @@ class TestRetrievalStrategy:
 # ---------------------------------------------------------------------------
 # TestRetrievalConfig
 # ---------------------------------------------------------------------------
+
 
 class TestRetrievalConfig:
     """Tests for RetrievalConfig-based retrieval."""
@@ -897,7 +938,9 @@ class TestRetrievalConfig:
                     )
                 ],
             ),
-            Message(role="tool", content="# agent response test", tool_call_id="call_1"),
+            Message(
+                role="tool", content="# agent response test", tool_call_id="call_1"
+            ),
         ]
         await tracemem.import_trace("conv-agent", messages)
 

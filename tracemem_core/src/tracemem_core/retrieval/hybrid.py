@@ -92,7 +92,12 @@ class HybridRetrievalStrategy:
         """
         cfg = config or RetrievalConfig()
 
-        logger.debug("search query=%r limit=%d include_context=%s", query, cfg.limit, cfg.include_context)
+        logger.debug(
+            "search query=%r limit=%d include_context=%s",
+            query,
+            cfg.limit,
+            cfg.include_context,
+        )
 
         # Get query embedding
         query_vector = await self._embedder.embed(query)
@@ -119,7 +124,7 @@ class HybridRetrievalStrategy:
                     deduped.append(vr)
                 elif vr.score > deduped[seen[vr.conversation_id]].score:
                     deduped[seen[vr.conversation_id]] = vr
-            vector_results = deduped[:cfg.limit]
+            vector_results = deduped[: cfg.limit]
 
         # Convert to retrieval results
         results: list[RetrievalResult] = []
@@ -191,12 +196,15 @@ class HybridRetrievalStrategy:
         """
         cfg = config or RetrievalConfig()
         records = await self._graph_store.get_trajectory_nodes(
-            node_id, max_depth=cfg.trajectory_max_depth,
+            node_id,
+            max_depth=cfg.trajectory_max_depth,
         )
         return self._parse_trajectory(node_id, records)
 
     def _parse_trajectory(
-        self, node_id: UUID, records: list[dict],
+        self,
+        node_id: UUID,
+        records: list[dict],
     ) -> TrajectoryResult:
         """Parse raw trajectory records into a TrajectoryResult.
 
@@ -225,13 +233,15 @@ class HybridRetrievalStrategy:
                 found_start = True
             elif node_type == "UserText" and found_start:
                 # This is the follow-up UserText — include it and stop
-                result.steps.append(TrajectoryStep(
-                    node_id=node["id"],
-                    node_type="UserText",
-                    text=node.get("text", ""),
-                    conversation_id=node.get("conversation_id", ""),
-                    created_at=self._parse_created_at(node),
-                ))
+                result.steps.append(
+                    TrajectoryStep(
+                        node_id=node["id"],
+                        node_type="UserText",
+                        text=node.get("text", ""),
+                        conversation_id=node.get("conversation_id", ""),
+                        created_at=self._parse_created_at(node),
+                    )
+                )
                 break
 
             if not found_start:

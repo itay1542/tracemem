@@ -12,9 +12,13 @@ from uuid import uuid4
 
 import pytest
 
+pytest.importorskip("neo4j", reason="neo4j driver not installed")
+
 from tracemem_core.models.edges import Relationship, VersionOf
 from tracemem_core.models.nodes import AgentText, Resource, ResourceVersion, UserText
 from tracemem_core.storage.graph.neo import Neo4jGraphStore
+
+pytestmark = pytest.mark.neo4j
 
 
 @pytest.fixture
@@ -227,7 +231,9 @@ class TestNeo4jGraphStoreCreateNode:
 
     # Resource MERGE behavior test
 
-    async def test_create_node_resource_returns_existing_on_duplicate_uri(self, graph_store):
+    async def test_create_node_resource_returns_existing_on_duplicate_uri(
+        self, graph_store
+    ):
         """Test that creating a Resource with existing URI returns the existing one."""
         resource1 = Resource(
             uri="file:///shared.py",

@@ -5,7 +5,13 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from tracemem_core.models.edges import EdgeBase
-from tracemem_core.models.nodes import AgentText, NodeBase, Resource, ResourceVersion, UserText
+from tracemem_core.models.nodes import (
+    AgentText,
+    NodeBase,
+    Resource,
+    ResourceVersion,
+    UserText,
+)
 from tracemem_core.retrieval.results import (
     ContextResult,
     ConversationReference,

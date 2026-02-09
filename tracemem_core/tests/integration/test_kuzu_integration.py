@@ -28,9 +28,7 @@ pytestmark = pytest.mark.kuzu
 class TestKuzuConversationChain:
     """Tests for conversation chain connectivity in Kuzu graph."""
 
-    async def test_conversation_forms_connected_chain(
-        self, tracemem_kuzu: TraceMem
-    ):
+    async def test_conversation_forms_connected_chain(self, tracemem_kuzu: TraceMem):
         """Verify alternating messages form a fully connected chain."""
         for i in range(3):
             await tracemem_kuzu.add_message(
@@ -107,7 +105,9 @@ class TestKuzuConversationChain:
                 role="assistant",
                 content="I'll read the file for you.",
                 tool_calls=[
-                    ToolCall(id="call_1", name="read_file", args={"path": str(test_file)})
+                    ToolCall(
+                        id="call_1", name="read_file", args={"path": str(test_file)}
+                    )
                 ],
             ),
             Message(role="tool", content="print('hello')", tool_call_id="call_1"),
@@ -123,7 +123,7 @@ class TestKuzuConversationChain:
             "MATCH (u:UserText {text: 'Read code.py and explain it'})"
             "-[:MESSAGE]->(a1:AgentText)"
             "-[:MESSAGE]->(a2:AgentText)"
-            " WHERE a1.text = \"I'll read the file for you.\""
+            ' WHERE a1.text = "I\'ll read the file for you."'
             " AND a2.text = 'The file contains a simple print statement.'"
             " RETURN count(*) AS chain_exists"
         )
@@ -151,7 +151,9 @@ class TestKuzuConversationChain:
             ),
             Message(role="tool", content="# file a", tool_call_id="c1"),
             Message(role="tool", content="# file b", tool_call_id="c2"),
-            Message(role="assistant", content="Both files are similar comment headers."),
+            Message(
+                role="assistant", content="Both files are similar comment headers."
+            ),
         ]
 
         await tracemem_kuzu.import_trace("conv-1", messages)
@@ -170,13 +172,9 @@ class TestKuzuConversationChain:
 class TestKuzuTurnIndex:
     """Turn index tests using Kuzu Cypher queries."""
 
-    async def test_assistant_same_turn_as_user(
-        self, tracemem_kuzu: TraceMem
-    ):
+    async def test_assistant_same_turn_as_user(self, tracemem_kuzu: TraceMem):
         """Assistant gets same turn_index as preceding user."""
-        await tracemem_kuzu.add_message(
-            "conv-1", Message(role="user", content="Hello")
-        )
+        await tracemem_kuzu.add_message("conv-1", Message(role="user", content="Hello"))
         result = await tracemem_kuzu.add_message(
             "conv-1", Message(role="assistant", content="Hi!")
         )
@@ -201,7 +199,9 @@ class TestKuzuTurnIndex:
                 role="assistant",
                 content="I'll read the file for you.",
                 tool_calls=[
-                    ToolCall(id="call_1", name="read_file", args={"path": str(test_file)})
+                    ToolCall(
+                        id="call_1", name="read_file", args={"path": str(test_file)}
+                    )
                 ],
             ),
             Message(role="tool", content="print('hello')", tool_call_id="call_1"),
@@ -250,9 +250,7 @@ class TestKuzuTurnIndex:
 class TestKuzuToolUsesStorage:
     """Tests for tool_uses property persistence in Kuzu."""
 
-    async def test_tool_uses_persisted(
-        self, tracemem_kuzu: TraceMem, tmp_path
-    ):
+    async def test_tool_uses_persisted(self, tracemem_kuzu: TraceMem, tmp_path):
         """Verify tool_uses are correctly stored and retrieved from Kuzu."""
         test_file = tmp_path / "code.py"
         test_file.write_text("print('hello')")
@@ -264,7 +262,9 @@ class TestKuzuToolUsesStorage:
                 content="I'll check git and read the file for you.",
                 tool_calls=[
                     ToolCall(id="call_1", name="bash", args={"command": "git status"}),
-                    ToolCall(id="call_2", name="read_file", args={"path": str(test_file)}),
+                    ToolCall(
+                        id="call_2", name="read_file", args={"path": str(test_file)}
+                    ),
                 ],
             ),
             Message(role="tool", content="On branch main", tool_call_id="call_1"),
@@ -289,9 +289,7 @@ class TestKuzuToolUsesStorage:
 
     async def test_tool_uses_empty_when_no_tools(self, tracemem_kuzu: TraceMem):
         """Verify empty tool_uses is stored as empty JSON array."""
-        await tracemem_kuzu.add_message(
-            "conv-1", Message(role="user", content="Hello")
-        )
+        await tracemem_kuzu.add_message("conv-1", Message(role="user", content="Hello"))
         await tracemem_kuzu.add_message(
             "conv-1", Message(role="assistant", content="Hi there!")
         )

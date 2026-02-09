@@ -58,7 +58,9 @@ def _import_read_trace(file_path: str, conv_id: str, content: str = "# content")
             role="assistant",
             content="Reading...",
             tool_calls=[
-                ToolCall(id=f"call_{conv_id}", name="read_file", args={"path": file_path})
+                ToolCall(
+                    id=f"call_{conv_id}", name="read_file", args={"path": file_path}
+                )
             ],
         ),
         Message(role="tool", content=content, tool_call_id=f"call_{conv_id}"),
@@ -177,7 +179,9 @@ class TestLocalModeURIs:
         resource = await tracemem_local._graph_store.get_resource_by_uri(expected_uri)
         assert resource is not None
 
-    async def test_portability_same_relative_path_matches(self, tmp_path, mock_embedder):
+    async def test_portability_same_relative_path_matches(
+        self, tmp_path, mock_embedder
+    ):
         """Same relative path matches across different absolute homes.
 
         Simulates moving a project to a different directory — relative URIs
@@ -192,7 +196,9 @@ class TestLocalModeURIs:
         project_file1.parent.mkdir(parents=True, exist_ok=True)
         project_file1.write_text("# main")
 
-        async with TraceMem(config=config1, embedder=mock_embedder, resource_extractor=extractor1) as tm1:
+        async with TraceMem(
+            config=config1, embedder=mock_embedder, resource_extractor=extractor1
+        ) as tm1:
             messages = _import_read_trace(str(project_file1), "conv-1")
             await tm1.import_trace("conv-1", messages)
 
@@ -221,7 +227,9 @@ class TestLocalModeURIs:
 class TestModeInteraction:
     """Tests for interaction between local and global modes."""
 
-    async def test_global_and_local_produce_different_uris(self, tmp_path, mock_embedder):
+    async def test_global_and_local_produce_different_uris(
+        self, tmp_path, mock_embedder
+    ):
         """Global and local modes produce different URIs for the same file.
 
         This means a Resource stored in global mode cannot be found by
@@ -236,12 +244,18 @@ class TestModeInteraction:
         global_config = TraceMemConfig(home=global_home)
         global_extractor = DefaultResourceExtractor(mode="global")
 
-        async with TraceMem(config=global_config, embedder=mock_embedder, resource_extractor=global_extractor) as tm_global:
+        async with TraceMem(
+            config=global_config,
+            embedder=mock_embedder,
+            resource_extractor=global_extractor,
+        ) as tm_global:
             messages = _import_read_trace(str(shared_path), "conv-g")
             await tm_global.import_trace("conv-g", messages)
 
             global_uri = f"file://{shared_path.resolve()}"
-            resource_global = await tm_global._graph_store.get_resource_by_uri(global_uri)
+            resource_global = await tm_global._graph_store.get_resource_by_uri(
+                global_uri
+            )
             assert resource_global is not None
 
         # Local mode (home under project)
@@ -249,7 +263,11 @@ class TestModeInteraction:
         local_config = TraceMemConfig(home=local_home)
         local_extractor = DefaultResourceExtractor(mode="local", home=local_home)
 
-        async with TraceMem(config=local_config, embedder=mock_embedder, resource_extractor=local_extractor) as tm_local:
+        async with TraceMem(
+            config=local_config,
+            embedder=mock_embedder,
+            resource_extractor=local_extractor,
+        ) as tm_local:
             messages = _import_read_trace(str(shared_path), "conv-l")
             await tm_local.import_trace("conv-l", messages)
 

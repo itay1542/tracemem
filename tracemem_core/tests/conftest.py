@@ -128,7 +128,9 @@ def neo4j_config():
 
 
 @pytest.fixture
-async def tracemem_integration(tmp_path: Path, mock_embedder: MockEmbedder, neo4j_config):
+async def tracemem_integration(
+    tmp_path: Path, mock_embedder: MockEmbedder, neo4j_config
+):
     """TraceMem instance with real Neo4j and LanceDB for integration tests.
 
     Requires Neo4j to be running:
@@ -154,7 +156,9 @@ async def tracemem_integration(tmp_path: Path, mock_embedder: MockEmbedder, neo4
     # Cleanup: delete all nodes using a fresh connection
     cleanup_store = Neo4jGraphStore(**neo4j_config)
     await cleanup_store.connect()
-    async with cleanup_store._driver.session(database=neo4j_config["database"]) as session:
+    async with cleanup_store._driver.session(
+        database=neo4j_config["database"]
+    ) as session:
         await session.run("MATCH (n) DETACH DELETE n")
     await cleanup_store.close()
 

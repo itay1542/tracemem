@@ -203,7 +203,9 @@ class TraceMem:
         Returns:
             List of RetrievalResult ordered by relevance.
         """
-        return await self.retrieval.search(query, config=config or self._config.retrieval)
+        return await self.retrieval.search(
+            query, config=config or self._config.retrieval
+        )
 
     async def get_context(self, node_id: UUID) -> ContextResult:
         """Get full context for a UserText node.
@@ -231,7 +233,8 @@ class TraceMem:
             List of ConversationReference with sorting applied.
         """
         return await self.retrieval.get_conversations_for_resource(
-            uri, config=config or self._config.retrieval,
+            uri,
+            config=config or self._config.retrieval,
         )
 
     async def get_trajectory(
@@ -249,7 +252,8 @@ class TraceMem:
             TrajectoryResult with all steps in chronological order.
         """
         return await self.retrieval.get_trajectory(
-            node_id, config=config or self._config.retrieval,
+            node_id,
+            config=config or self._config.retrieval,
         )
 
     def _compute_content_hash(self, content: str) -> str:

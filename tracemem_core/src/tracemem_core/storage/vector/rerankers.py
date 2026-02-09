@@ -33,8 +33,7 @@ def get_reranker(reranker: str | Any) -> Any:
     if isinstance(reranker, str):
         if reranker not in RERANKER_REGISTRY:
             raise ValueError(
-                f"Unknown reranker {reranker!r}. "
-                f"Available: {list(RERANKER_REGISTRY)}"
+                f"Unknown reranker {reranker!r}. Available: {list(RERANKER_REGISTRY)}"
             )
         return RERANKER_REGISTRY[reranker]
     return reranker

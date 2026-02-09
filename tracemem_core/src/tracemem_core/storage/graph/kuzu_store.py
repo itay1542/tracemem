@@ -314,7 +314,9 @@ class KuzuGraphStore:
                     conversation_id=existing["r.conversation_id"],
                     current_content_hash=existing.get("r.current_content_hash"),
                     created_at=datetime.fromisoformat(existing["r.created_at"]),
-                    last_accessed_at=datetime.fromisoformat(existing["r.last_accessed_at"]),
+                    last_accessed_at=datetime.fromisoformat(
+                        existing["r.last_accessed_at"]
+                    ),
                 )
 
             conn.execute(
@@ -460,7 +462,10 @@ class KuzuGraphStore:
                     f"MATCH (s:{src_label}), (t:{tgt_label}) "
                     "WHERE s.id = $source_id AND t.id = $target_id "
                     "RETURN count(*) as cnt",
-                    {"source_id": params["source_id"], "target_id": params["target_id"]},
+                    {
+                        "source_id": params["source_id"],
+                        "target_id": params["target_id"],
+                    },
                 )
                 row = _single(check)
                 if row and row["cnt"] > 0:
@@ -856,7 +861,11 @@ class KuzuGraphStore:
 
         logger.debug(
             "get_resource_conversations uri=%s limit=%d sort_by=%s sort_order=%s exclude=%s",
-            uri, limit, sort_by, sort_order, exclude_conversation_id,
+            uri,
+            limit,
+            sort_by,
+            sort_order,
+            exclude_conversation_id,
         )
 
         def _get(conn: kuzu.Connection) -> list[ConversationReference]:
@@ -967,10 +976,12 @@ class KuzuGraphStore:
                 }
                 if row.get("tool_uses"):
                     node_props["tool_uses"] = row["tool_uses"]
-                records.append({
-                    "n": node_props,
-                    "node_labels": [row["node_label"]],
-                })
+                records.append(
+                    {
+                        "n": node_props,
+                        "node_labels": [row["node_label"]],
+                    }
+                )
             return records
 
         result = await asyncio.to_thread(_get, self._conn)

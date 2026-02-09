@@ -41,9 +41,18 @@ class TestVectorRecall:
         """Test that coding-related queries find relevant past conversations."""
         # Past conversations with a coding agent
         coding_conversations = [
-            ("Implement a REST API endpoint for user authentication using JWT tokens", "coding"),
-            ("Add input validation to the signup form with email and password checks", "coding"),
-            ("Refactor the database layer to use async SQLAlchemy with connection pooling", "coding"),
+            (
+                "Implement a REST API endpoint for user authentication using JWT tokens",
+                "coding",
+            ),
+            (
+                "Add input validation to the signup form with email and password checks",
+                "coding",
+            ),
+            (
+                "Refactor the database layer to use async SQLAlchemy with connection pooling",
+                "coding",
+            ),
             ("Write unit tests for the payment processing module", "coding"),
             ("Fix the race condition in the WebSocket handler", "coding"),
         ]
@@ -62,7 +71,7 @@ class TestVectorRecall:
                 text=text,
                 vector=embedding,
                 conversation_id=f"conv-{topic}-{uuid4().hex[:8]}",
-                            )
+            )
 
         # Query about implementing a feature
         query_text = "implement user login with OAuth2"
@@ -76,7 +85,9 @@ class TestVectorRecall:
 
         # Top results should be coding-related
         coding_count = sum(1 for r in results if "coding" in r.conversation_id)
-        assert coding_count >= 2, f"Expected at least 2 coding results, got {coding_count}"
+        assert coding_count >= 2, (
+            f"Expected at least 2 coding results, got {coding_count}"
+        )
 
     async def test_trading_agent_finds_related_stock_analysis(
         self, vector_store, openai_embedder
@@ -84,11 +95,20 @@ class TestVectorRecall:
         """Test that trading-related queries find relevant past conversations."""
         # Past conversations with a trading agent
         trading_conversations = [
-            ("I bought 50 shares of Meta at $480, should I hold or sell now?", "trading"),
+            (
+                "I bought 50 shares of Meta at $480, should I hold or sell now?",
+                "trading",
+            ),
             ("Analyze Netflix stock for a potential swing trade entry", "trading"),
-            ("What's your technical analysis on AAPL's current chart pattern?", "trading"),
+            (
+                "What's your technical analysis on AAPL's current chart pattern?",
+                "trading",
+            ),
             ("Should I add to my NVIDIA position given the AI hype?", "trading"),
-            ("Review my portfolio allocation: 40% tech, 30% healthcare, 30% bonds", "trading"),
+            (
+                "Review my portfolio allocation: 40% tech, 30% healthcare, 30% bonds",
+                "trading",
+            ),
             ("Set a stop loss for my Tesla position at 15% below entry", "trading"),
         ]
 
@@ -106,7 +126,7 @@ class TestVectorRecall:
                 text=text,
                 vector=embedding,
                 conversation_id=f"conv-{topic}-{uuid4().hex[:8]}",
-                            )
+            )
 
         # Query about stock analysis
         query_text = "analyze AMD stock price movement"
@@ -120,7 +140,9 @@ class TestVectorRecall:
 
         # Top results should be trading-related
         trading_count = sum(1 for r in results if "trading" in r.conversation_id)
-        assert trading_count >= 3, f"Expected at least 3 trading results, got {trading_count}"
+        assert trading_count >= 3, (
+            f"Expected at least 3 trading results, got {trading_count}"
+        )
 
     async def test_hybrid_search_finds_specific_stock_ticker(
         self, vector_store, openai_embedder
@@ -141,7 +163,7 @@ class TestVectorRecall:
                 text=text,
                 vector=embedding,
                 conversation_id=f"conv-{i}",
-                            )
+            )
 
         # Search for specific ticker - FTS should boost exact match
         query_text = "TSLA"
@@ -183,7 +205,7 @@ class TestVectorRecall:
                 text=text,
                 vector=embedding,
                 conversation_id=f"conv-{doc_type}",
-                            )
+            )
 
         # Search by company name, should find both ticker and name docs
         query_text = "Tesla stock analysis"
@@ -252,7 +274,7 @@ class TestVectorRecall:
                 text=text,
                 vector=embedding,
                 conversation_id="relevant",
-                            )
+            )
 
         for text in irrelevant_docs:
             embedding = await openai_embedder.embed(text)
@@ -261,7 +283,7 @@ class TestVectorRecall:
                 text=text,
                 vector=embedding,
                 conversation_id="irrelevant",
-                            )
+            )
 
         # Query about API implementation
         query_text = "build a REST API for order management"

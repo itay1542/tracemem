@@ -57,7 +57,9 @@ class TestLanceDBVectorStore:
         assert store._db is None
         assert store._table is None
 
-    async def test_operations_raise_when_not_connected(self, tmp_path: Path, make_vector):
+    async def test_operations_raise_when_not_connected(
+        self, tmp_path: Path, make_vector
+    ):
         """Test that operations raise RuntimeError when not connected."""
         store = LanceDBVectorStore(path=tmp_path / "lancedb")
         node_id = uuid4()
@@ -275,9 +277,13 @@ class TestLanceDBVectorStore:
 
         node_id = uuid4()
         vector = make_vector(42)
-        await store.add(node_id=node_id, text="test doc", vector=vector, conversation_id="c1")
+        await store.add(
+            node_id=node_id, text="test doc", vector=vector, conversation_id="c1"
+        )
 
-        results = await store.search(query_vector=vector, query_text="test", vector_weight=0.3)
+        results = await store.search(
+            query_vector=vector, query_text="test", vector_weight=0.3
+        )
 
         assert store._reranker is custom_reranker
         assert len(results) >= 1

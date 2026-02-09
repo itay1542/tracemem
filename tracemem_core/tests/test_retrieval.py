@@ -194,7 +194,9 @@ class TestHybridRetrievalStrategySearch:
 
         mock_embedder.embed.assert_called_once_with("test query")
 
-    async def test_search_calls_vector_store(self, strategy, mock_vector_store, mock_embedder):
+    async def test_search_calls_vector_store(
+        self, strategy, mock_vector_store, mock_embedder
+    ):
         """Verify search uses vector store with correct params."""
         mock_embedder.embed = AsyncMock(return_value=[0.1] * 1536)
         mock_vector_store.search = AsyncMock(return_value=[])
@@ -287,7 +289,9 @@ class TestHybridRetrievalStrategySearch:
         )
         mock_graph_store.get_node_context = AsyncMock(
             return_value=ContextResult(
-                user_text=UserTextInfo(id=str(node_id), text="query text", conversation_id="conv-1"),
+                user_text=UserTextInfo(
+                    id=str(node_id), text="query text", conversation_id="conv-1"
+                ),
                 agent_text=AgentTextInfo(id="agent-1", text="response text"),
             )
         )
@@ -339,11 +343,15 @@ class TestHybridRetrievalStrategyGetContext:
             embedder=mock_embedder,
         )
 
-    async def test_get_context_delegates_to_graph_store(self, strategy, mock_graph_store):
+    async def test_get_context_delegates_to_graph_store(
+        self, strategy, mock_graph_store
+    ):
         """Verify get_context delegates to graph_store.get_node_context."""
         node_id = uuid4()
         expected = ContextResult(
-            user_text=UserTextInfo(id=str(node_id), text="question", conversation_id="c1"),
+            user_text=UserTextInfo(
+                id=str(node_id), text="question", conversation_id="c1"
+            ),
             agent_text=AgentTextInfo(id="a1", text="answer"),
         )
         mock_graph_store.get_node_context = AsyncMock(return_value=expected)
@@ -354,7 +362,9 @@ class TestHybridRetrievalStrategyGetContext:
         assert result.user_text.text == "question"
         assert result.agent_text.text == "answer"
 
-    async def test_get_context_returns_empty_when_not_found(self, strategy, mock_graph_store):
+    async def test_get_context_returns_empty_when_not_found(
+        self, strategy, mock_graph_store
+    ):
         """Verify get_context returns empty context when node not found."""
         mock_graph_store.get_node_context = AsyncMock(return_value=ContextResult())
 
@@ -377,7 +387,9 @@ class TestHybridRetrievalStrategyGetConversationsForResource:
             embedder=mock_embedder,
         )
 
-    async def test_get_conversations_returns_empty_list(self, strategy, mock_graph_store):
+    async def test_get_conversations_returns_empty_list(
+        self, strategy, mock_graph_store
+    ):
         """Verify returns empty list when no conversations found."""
         mock_graph_store.get_resource_conversations = AsyncMock(return_value=[])
 
@@ -385,7 +397,9 @@ class TestHybridRetrievalStrategyGetConversationsForResource:
 
         assert result == []
 
-    async def test_get_conversations_delegates_to_graph_store(self, strategy, mock_graph_store):
+    async def test_get_conversations_delegates_to_graph_store(
+        self, strategy, mock_graph_store
+    ):
         """Verify delegates to graph_store.get_resource_conversations."""
         expected = [
             ConversationReference(
@@ -424,7 +438,9 @@ class TestHybridRetrievalStrategyGetConversationsForResource:
             exclude_conversation_id="conv-exclude",
         )
 
-    async def test_get_conversations_uses_default_config(self, strategy, mock_graph_store):
+    async def test_get_conversations_uses_default_config(
+        self, strategy, mock_graph_store
+    ):
         """Verify default config is used when none provided."""
         mock_graph_store.get_resource_conversations = AsyncMock(return_value=[])
 
@@ -451,7 +467,9 @@ class TestHybridRetrievalStrategyGetTrajectory:
             embedder=mock_embedder,
         )
 
-    async def test_get_trajectory_delegates_to_graph_store(self, strategy, mock_graph_store):
+    async def test_get_trajectory_delegates_to_graph_store(
+        self, strategy, mock_graph_store
+    ):
         """Verify get_trajectory delegates data fetch to graph_store."""
         node_id = uuid4()
         mock_graph_store.get_trajectory_nodes = AsyncMock(return_value=[])
@@ -459,10 +477,13 @@ class TestHybridRetrievalStrategyGetTrajectory:
         await strategy.get_trajectory(node_id)
 
         mock_graph_store.get_trajectory_nodes.assert_called_once_with(
-            node_id, max_depth=100,
+            node_id,
+            max_depth=100,
         )
 
-    async def test_get_trajectory_passes_max_depth_from_config(self, strategy, mock_graph_store):
+    async def test_get_trajectory_passes_max_depth_from_config(
+        self, strategy, mock_graph_store
+    ):
         """Verify trajectory_max_depth from config is passed."""
         node_id = uuid4()
         mock_graph_store.get_trajectory_nodes = AsyncMock(return_value=[])
@@ -471,7 +492,8 @@ class TestHybridRetrievalStrategyGetTrajectory:
         await strategy.get_trajectory(node_id, config=config)
 
         mock_graph_store.get_trajectory_nodes.assert_called_once_with(
-            node_id, max_depth=50,
+            node_id,
+            max_depth=50,
         )
 
 

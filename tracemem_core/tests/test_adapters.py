@@ -3,7 +3,6 @@
 import pytest
 
 
-
 class TestLangChainAdapter:
     """Test LangChainAdapter."""
 
@@ -148,7 +147,9 @@ class TestLangChainAdapter:
 
         msg = AIMessage(
             content="",
-            tool_calls=[{"id": "call_123", "name": "test_tool", "args": {"key": "value"}}],
+            tool_calls=[
+                {"id": "call_123", "name": "test_tool", "args": {"key": "value"}}
+            ],
         )
         result = adapter.convert_single(msg)
 

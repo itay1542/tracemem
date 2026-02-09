@@ -10,7 +10,10 @@ class TestCanonicalizeFileUri:
 
     def test_http_url_passes_through(self) -> None:
         """Non-file URIs pass through unchanged."""
-        assert _canonicalize_file_uri("https://example.com/api", root=None) == "https://example.com/api"
+        assert (
+            _canonicalize_file_uri("https://example.com/api", root=None)
+            == "https://example.com/api"
+        )
 
     def test_custom_scheme_passes_through(self) -> None:
         """Custom URI schemes pass through unchanged."""
@@ -98,7 +101,9 @@ class TestDefaultResourceExtractor:
 
     def test_extract_url_passes_through(self) -> None:
         """Non-file URIs pass through unchanged."""
-        extractor = DefaultResourceExtractor(mode="local", home=Path("/some/project/.tracemem"))
+        extractor = DefaultResourceExtractor(
+            mode="local", home=Path("/some/project/.tracemem")
+        )
         result = extractor.extract("fetch", {"url": "https://example.com/api"})
         assert result == "https://example.com/api"
 

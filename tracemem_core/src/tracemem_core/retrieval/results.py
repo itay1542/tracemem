@@ -144,7 +144,9 @@ class ConversationReference(BaseModel):
 
     def __str__(self) -> str:
         uid = self.user_text_id[:8]
-        text_preview = self.user_text[:60] + "..." if len(self.user_text) > 60 else self.user_text
+        text_preview = (
+            self.user_text[:60] + "..." if len(self.user_text) > 60 else self.user_text
+        )
         ts = self.created_at.strftime("%Y-%m-%d %H:%M") if self.created_at else "n/a"
         return f"ConvRef({uid}, conv={self.conversation_id}, ts={ts}, user={text_preview!r})"
 
@@ -163,7 +165,11 @@ class TrajectoryStep(BaseModel):
         nid = self.node_id[:8]
         ts = self.created_at.strftime("%Y-%m-%d %H:%M") if self.created_at else "n/a"
         text_preview = self.text[:60] + "..." if len(self.text) > 60 else self.text
-        tools = f" tools=[{', '.join(t.tool_name for t in self.tool_uses)}]" if self.tool_uses else ""
+        tools = (
+            f" tools=[{', '.join(t.tool_name for t in self.tool_uses)}]"
+            if self.tool_uses
+            else ""
+        )
         return f"Step({nid} {ts} {self.node_type}: {text_preview!r}{tools})"
 
 

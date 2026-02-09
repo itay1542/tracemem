@@ -87,7 +87,10 @@ class TestResourceVersionEdges:
             )
             records = await result.data()
             assert len(records) == 1
-            assert records[0]["version_hash"] == hashlib.sha256("version 1".encode()).hexdigest()
+            assert (
+                records[0]["version_hash"]
+                == hashlib.sha256("version 1".encode()).hexdigest()
+            )
 
 
 class TestSharedResourceGraphStructure:
@@ -260,7 +263,9 @@ class TestConversationChain:
                 role="assistant",
                 content="I'll read the file for you.",
                 tool_calls=[
-                    ToolCall(id="call_1", name="read_file", args={"path": str(test_file)})
+                    ToolCall(
+                        id="call_1", name="read_file", args={"path": str(test_file)}
+                    )
                 ],
             ),
             Message(role="tool", content="print('hello')", tool_call_id="call_1"),
@@ -308,7 +313,9 @@ class TestConversationChain:
             ),
             Message(role="tool", content="# file a", tool_call_id="c1"),
             Message(role="tool", content="# file b", tool_call_id="c2"),
-            Message(role="assistant", content="Both files are similar comment headers."),
+            Message(
+                role="assistant", content="Both files are similar comment headers."
+            ),
         ]
 
         await tracemem_integration.import_trace("conv-1", messages)
@@ -334,9 +341,7 @@ class TestConversationChain:
 class TestTurnIndexNeo4j:
     """Turn index tests that require raw Neo4j queries."""
 
-    async def test_assistant_same_turn_as_user(
-        self, tracemem_integration: TraceMem
-    ):
+    async def test_assistant_same_turn_as_user(self, tracemem_integration: TraceMem):
         """Assistant gets same turn_index as preceding user."""
         await tracemem_integration.add_message(
             "conv-1", Message(role="user", content="Hello")
@@ -372,7 +377,9 @@ class TestTurnIndexNeo4j:
                 role="assistant",
                 content="I'll read the file for you.",
                 tool_calls=[
-                    ToolCall(id="call_1", name="read_file", args={"path": str(test_file)})
+                    ToolCall(
+                        id="call_1", name="read_file", args={"path": str(test_file)}
+                    )
                 ],
             ),
             Message(role="tool", content="print('hello')", tool_call_id="call_1"),
@@ -398,9 +405,7 @@ class TestTurnIndexNeo4j:
             assert len(records) == 2
             assert all(r["turn_index"] == 0 for r in records)
 
-    async def test_turn_based_chain_query(
-        self, tracemem_integration: TraceMem
-    ):
+    async def test_turn_based_chain_query(self, tracemem_integration: TraceMem):
         """Can query all nodes in a specific turn."""
         for i in range(3):
             await tracemem_integration.add_message(
@@ -446,7 +451,9 @@ class TestToolUsesIntegration:
                 content="I'll check git and read the file for you.",
                 tool_calls=[
                     ToolCall(id="call_1", name="bash", args={"command": "git status"}),
-                    ToolCall(id="call_2", name="read_file", args={"path": str(test_file)}),
+                    ToolCall(
+                        id="call_2", name="read_file", args={"path": str(test_file)}
+                    ),
                 ],
             ),
             Message(role="tool", content="On branch main", tool_call_id="call_1"),

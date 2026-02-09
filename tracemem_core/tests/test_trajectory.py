@@ -90,7 +90,9 @@ class TestGetTrajectory:
             embedder=mock_embedder,
         )
 
-    async def test_get_trajectory_empty_when_not_found(self, strategy, mock_graph_store):
+    async def test_get_trajectory_empty_when_not_found(
+        self, strategy, mock_graph_store
+    ):
         """Returns empty trajectory when node not found."""
         mock_graph_store.get_trajectory_nodes = AsyncMock(return_value=[])
 
@@ -124,10 +126,12 @@ class TestGetTrajectory:
                         "text": "",
                         "conversation_id": "conv-1",
                         "created_at": "2024-01-01T00:01:00",
-                        "tool_uses": json.dumps([
-                            {"name": "Read", "args": {"file_path": "auth.py"}},
-                            {"name": "Edit", "args": {"file_path": "auth.py"}},
-                        ]),
+                        "tool_uses": json.dumps(
+                            [
+                                {"name": "Read", "args": {"file_path": "auth.py"}},
+                                {"name": "Edit", "args": {"file_path": "auth.py"}},
+                            ]
+                        ),
                     },
                     "node_labels": ["AgentText"],
                 },
@@ -178,19 +182,39 @@ class TestGetTrajectory:
         mock_graph_store.get_trajectory_nodes = AsyncMock(
             return_value=[
                 {
-                    "n": {"id": user_id, "text": "Q1", "conversation_id": "c1", "created_at": "2024-01-01T00:00:00"},
+                    "n": {
+                        "id": user_id,
+                        "text": "Q1",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:00:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
-                    "n": {"id": agent_id, "text": "A1", "conversation_id": "c1", "created_at": "2024-01-01T00:01:00"},
+                    "n": {
+                        "id": agent_id,
+                        "text": "A1",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:01:00",
+                    },
                     "node_labels": ["AgentText"],
                 },
                 {
-                    "n": {"id": next_user_id, "text": "Q2", "conversation_id": "c1", "created_at": "2024-01-01T00:02:00"},
+                    "n": {
+                        "id": next_user_id,
+                        "text": "Q2",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:02:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
-                    "n": {"id": third_agent_id, "text": "A2", "conversation_id": "c1", "created_at": "2024-01-01T00:03:00"},
+                    "n": {
+                        "id": third_agent_id,
+                        "text": "A2",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:03:00",
+                    },
                     "node_labels": ["AgentText"],
                 },
             ]
@@ -210,11 +234,21 @@ class TestGetTrajectory:
         mock_graph_store.get_trajectory_nodes = AsyncMock(
             return_value=[
                 {
-                    "n": {"id": user_id, "text": "Last question", "conversation_id": "c1", "created_at": "2024-01-01T00:00:00"},
+                    "n": {
+                        "id": user_id,
+                        "text": "Last question",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:00:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
-                    "n": {"id": agent_id, "text": "Final answer", "conversation_id": "c1", "created_at": "2024-01-01T00:01:00"},
+                    "n": {
+                        "id": agent_id,
+                        "text": "Final answer",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:01:00",
+                    },
                     "node_labels": ["AgentText"],
                 },
             ]
@@ -237,7 +271,12 @@ class TestGetTrajectory:
         mock_graph_store.get_trajectory_nodes = AsyncMock(
             return_value=[
                 {
-                    "n": {"id": user_id, "text": "Run ls", "conversation_id": "c1", "created_at": "2024-01-01T00:00:00"},
+                    "n": {
+                        "id": user_id,
+                        "text": "Run ls",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:00:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
@@ -269,7 +308,12 @@ class TestGetTrajectory:
         mock_graph_store.get_trajectory_nodes = AsyncMock(
             return_value=[
                 {
-                    "n": {"id": user_id, "text": "Search", "conversation_id": "c1", "created_at": "2024-01-01T00:00:00"},
+                    "n": {
+                        "id": user_id,
+                        "text": "Search",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:00:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
@@ -300,11 +344,21 @@ class TestGetTrajectory:
         mock_graph_store.get_trajectory_nodes = AsyncMock(
             return_value=[
                 {
-                    "n": {"id": user_id, "text": "Hello", "conversation_id": "c1", "created_at": "2024-01-01T00:00:00"},
+                    "n": {
+                        "id": user_id,
+                        "text": "Hello",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:00:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
-                    "n": {"id": agent_id, "text": "Hi", "conversation_id": "c1", "created_at": "2024-01-01T00:01:00"},
+                    "n": {
+                        "id": agent_id,
+                        "text": "Hi",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:01:00",
+                    },
                     "node_labels": ["AgentText"],
                 },
             ]
@@ -323,11 +377,21 @@ class TestGetTrajectory:
         mock_graph_store.get_trajectory_nodes = AsyncMock(
             return_value=[
                 {
-                    "n": {"id": user_id, "text": "Q", "conversation_id": "c1", "created_at": "2024-01-01T00:00:00"},
+                    "n": {
+                        "id": user_id,
+                        "text": "Q",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:00:00",
+                    },
                     "node_labels": ["UserText"],
                 },
                 {
-                    "n": {"id": str(uuid4()), "text": "resource", "conversation_id": "c1", "created_at": "2024-01-01T00:01:00"},
+                    "n": {
+                        "id": str(uuid4()),
+                        "text": "resource",
+                        "conversation_id": "c1",
+                        "created_at": "2024-01-01T00:01:00",
+                    },
                     "node_labels": ["Resource"],
                 },
             ]
