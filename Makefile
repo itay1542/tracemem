@@ -19,7 +19,7 @@ help:
 	@echo ""
 	@echo "Build & Release:"
 	@echo "  make build       Build all packages"
-	@echo "  make release V=0.2.0  Tag and push a release (triggers PyPI publish)"
+	@echo "  make release V=0.2.0  Create release branch + PR (merge to publish)"
 	@echo "  make release-patch    Bump patch version (0.1.0 -> 0.1.1) and release"
 	@echo "  make release-minor    Bump minor version (0.1.0 -> 0.2.0) and release"
 	@echo "  make release-major    Bump major version (0.1.0 -> 1.0.0) and release"
@@ -86,14 +86,16 @@ ifndef V
 	$(error Usage: make release V=x.y.z)
 endif
 	@echo "Releasing v$(V) (current: $(CURRENT_VERSION))"
+	git checkout -b release/v$(V)
 	sed -i '' 's/^version = ".*"/version = "$(V)"/' tracemem_core/pyproject.toml
 	sed -i '' 's/^version = ".*"/version = "$(V)"/' tracemem-installer/pyproject.toml
 	git add tracemem_core/pyproject.toml tracemem-installer/pyproject.toml
 	git commit -m "release: v$(V)"
-	git tag v$(V)
+	git push -u origin release/v$(V)
+	gh pr create --title "release: v$(V)" --body "Bump version to $(V) and publish to PyPI."
 	@echo ""
-	@echo "Tagged v$(V). Push with:"
-	@echo "  git push origin main --tags"
+	@echo "PR created. Merge it to trigger the release."
+	git checkout main
 
 # Maintenance
 clean:
