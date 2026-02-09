@@ -28,7 +28,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/skills/tracemem/hook.py PostToolUse"
+            "command": "uv run .claude/skills/tracemem/hook.py PostToolUse",
+            "async": true,
+            "timeout": 30
           }
         ]
       }
@@ -39,7 +41,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/skills/tracemem/hook.py Stop"
+            "command": "uv run .claude/skills/tracemem/hook.py Stop",
+            "async": true,
+            "timeout": 60
           }
         ]
       }

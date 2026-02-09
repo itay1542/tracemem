@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from tracemem_installer.install import run_init
+from tracemem_installer.install import run_init, run_update
 from tracemem_installer.uninstall import run_uninstall
 
 
@@ -36,6 +36,25 @@ def main() -> None:
         help="Overwrite existing installation",
     )
 
+    update_parser = sub.add_parser(
+        "update", help="Update TraceMem hooks to latest version"
+    )
+    update_parser.add_argument(
+        "--global",
+        dest="scope",
+        action="store_const",
+        const="global",
+        default="local",
+        help="Update in ~/.claude/ (default: ./.claude/)",
+    )
+    update_parser.add_argument(
+        "--local",
+        dest="scope",
+        action="store_const",
+        const="local",
+        help="Update in ./.claude/ (default)",
+    )
+
     uninstall_parser = sub.add_parser("uninstall", help="Remove TraceMem hooks")
     uninstall_parser.add_argument(
         "--global",
@@ -57,6 +76,8 @@ def main() -> None:
 
     if args.command == "init":
         run_init(args.scope, force=args.force)
+    elif args.command == "update":
+        run_update(args.scope)
     elif args.command == "uninstall":
         run_uninstall(args.scope)
     else:

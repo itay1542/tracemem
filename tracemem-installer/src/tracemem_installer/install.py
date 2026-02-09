@@ -3,6 +3,8 @@
 import json
 import os
 import shutil
+import urllib.request
+from importlib.metadata import version as installed_version
 from importlib.resources import files
 from pathlib import Path
 
@@ -115,6 +117,77 @@ def _prompt_api_key() -> str | None:
         print()
         return None
     return key or None
+
+
+def _get_pypi_version(package: str) -> str | None:
+    """Fetch the latest version of a package from PyPI."""
+    try:
+        url = f"https://pypi.org/pypi/{package}/json"
+        req = urllib.request.Request(url, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+            return data["info"]["version"]
+    except Exception:
+        return None
+
+
+def _get_installed_version() -> str:
+    """Get the currently installed version of tracemem-claude."""
+    try:
+        return installed_version("tracemem-claude")
+    except Exception:
+        return "unknown"
+
+
+def _check_for_updates() -> tuple[str, str | None]:
+    """Check if a newer version is available on PyPI.
+
+    Returns:
+        Tuple of (current_version, latest_version or None if check failed).
+    """
+    current = _get_installed_version()
+    latest = _get_pypi_version("tracemem-claude")
+    return current, latest
+
+
+def run_update(scope: str) -> None:
+    """Update an existing TraceMem installation.
+
+    Checks for newer version on PyPI, re-copies templates, and re-merges settings
+    while preserving the API key.
+    """
+    claude_dir = _resolve_target(scope)
+    skill_dir = claude_dir / "skills" / "tracemem"
+    env_path = skill_dir / ".env"
+
+    if not skill_dir.exists():
+        print(f"TraceMem is not installed at {skill_dir}")
+        print("Run 'tracemem-claude init' first.")
+        raise SystemExit(1)
+
+    # Check for newer version
+    current, latest = _check_for_updates()
+    if latest and current != "unknown" and latest != current:
+        print(f"  New version available: {current} → {latest}")
+        print(f"  Run: uvx tracemem-claude@{latest} update")
+        print()
+
+    # Preserve API key
+    existing_key = _read_existing_api_key(env_path)
+
+    shutil.rmtree(skill_dir)
+    installed = _copy_templates(skill_dir)
+    _merge_settings(claude_dir, scope)
+    _ensure_gitignore(claude_dir)
+
+    if existing_key:
+        _write_api_key(env_path, existing_key)
+
+    print()
+    print(f"TraceMem hooks updated successfully! (v{current})")
+    print(f"  Location: {skill_dir}")
+    print(f"  Files: {len(installed)}")
+    print()
 
 
 def run_init(scope: str, *, force: bool = False) -> None:

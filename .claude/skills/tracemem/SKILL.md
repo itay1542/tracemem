@@ -1,6 +1,6 @@
 ---
 name: tracemem
-description: Search past coding interactions for relevant context. Use when recalling how similar problems were solved, what decisions were made about files/features, or finding relevant patterns from past conversations.
+description: Search past coding interactions for relevant context. Use when recalling how similar problems were solved and when tracemem hook outputs provide insufficient or irrelevant entries, what decisions were made about files/features, or finding relevant patterns from past conversations.
 user_invocable: true
 context: fork
 argument-hint: [search query or --stats or --file-history <path>]

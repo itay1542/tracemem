@@ -25,39 +25,43 @@ def format_similar_queries(
 
     sections: list[str] = []
     for result, trajectory in results:
-        lines: list[str] = [f"## Similar Past Query (score: {result.score:.2f})"]
+        lines: list[str] = [f"## Similar Past Query (score: {result.score:.2f}, node_id: {result.node_id})"]
         lines.append(f"**User:** {_truncate(result.text, 200)}")
 
-        # Collect all tool uses and find the last AgentText with actual text
-        # (the Stop handler writes the final response as the last AgentText)
-        actions = []
-        agent_text = ""
+        # Build trajectory summary: count agent messages, tool uses by name, find follow-up
+        agent_msg_count = 0
+        tool_counts: dict[str, int] = {}
         follow_up = ""
         for step in trajectory.steps:
             if step.node_type == "AgentText":
-                # Take the last non-empty text (Stop handler's output)
-                if step.text:
-                    agent_text = step.text
+                agent_msg_count += 1
                 for tu in step.tool_uses:
-                    uri = tu.properties.get("file_path", tu.properties.get("path", ""))
-                    if uri:
-                        actions.append(f"{tu.tool_name} {uri}")
-                    else:
-                        actions.append(tu.tool_name)
+                    tool_counts[tu.tool_name] = tool_counts.get(tu.tool_name, 0) + 1
             elif step.node_type == "UserText" and step.node_id != str(result.node_id):
                 follow_up = step.text
 
-        if actions:
-            lines.append(f"**Actions:** {' → '.join(actions)}")
-        if agent_text:
-            lines.append(f"**Response:** {_truncate(agent_text, 300)}")
+        # Format path summary
+        if tool_counts or agent_msg_count:
+            parts = []
+            total_tools = sum(tool_counts.values())
+            if total_tools:
+                tool_summary = ", ".join(f"{name} x{count}" for name, count in tool_counts.items())
+                parts.append(f"{total_tools} tool uses ({tool_summary})")
+            parts.append(f"{agent_msg_count} agent messages")
+            lines.append(f"**Path:** [{' | '.join(parts)}]")
+
         if follow_up:
-            lines.append(f"**Follow-up:** {_truncate(follow_up, 150)}")
+            lines.append(f"**Next user message:** {_truncate(follow_up, 150)}")
 
         sections.append("\n".join(lines))
 
     body = "\n\n".join(sections)
-    return f"<tracemem-context>\n{body}\n</tracemem-context>"
+    hint = (
+        "<system-reminder>If any of the above TraceMem entries seem relevant to the "
+        "current task and you need more detail, use the /tracemem skill to expand on "
+        "a specific node_id or search for additional memories.</system-reminder>"
+    )
+    return f"<tracemem-context>\n{body}\n</tracemem-context>\n{hint}"
 
 
 def format_resource_history(
@@ -84,6 +88,12 @@ def format_resource_history(
             lines.append(f"- User asked \"{user_part}\" → Agent: {agent_part}")
         else:
             lines.append(f"- User asked \"{user_part}\"")
+
+    lines.append(
+        "\nIf any of the above TraceMem entries seem relevant to the current task "
+        "and you need more detail, use the /tracemem skill to expand on a specific "
+        "entry or search for additional memories."
+    )
 
     return "\n".join(lines)
 

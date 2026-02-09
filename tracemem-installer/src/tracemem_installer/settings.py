@@ -42,6 +42,8 @@ def build_hook_entries(scope: str) -> dict[str, list[dict]]:
                     {
                         "type": "command",
                         "command": f"uv run {path}/hook.py PostToolUse",
+                        "async": True,
+                        "timeout": 30,
                     }
                 ],
             }
@@ -53,6 +55,8 @@ def build_hook_entries(scope: str) -> dict[str, list[dict]]:
                     {
                         "type": "command",
                         "command": f"uv run {path}/hook.py Stop",
+                        "async": True,
+                        "timeout": 60,
                     }
                 ],
             }
