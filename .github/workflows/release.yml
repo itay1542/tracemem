@@ -7,11 +7,13 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
-  tag:
+  release:
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/v')
     runs-on: ubuntu-latest
+    environment: pypi
     steps:
       - uses: actions/checkout@v4
 
@@ -27,3 +29,20 @@ jobs:
         run: |
           git tag ${{ steps.version.outputs.tag }}
           git push origin ${{ steps.version.outputs.tag }}
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build tracemem-core
+        run: uv build --package tracemem-core
+
+      - name: Build tracemem-claude
+        run: uv build --package tracemem-claude
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
